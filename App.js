@@ -6,7 +6,7 @@
  * @flow
  */
 
-import React from 'react';
+import React, { Component } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -27,31 +27,41 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import Post from './src/components/Post';
+
 const photos = [
   { id: '1', user: { name: "Tiago Rosa da costa" } },
   { id: '2', user: { name: "Tiago R. da costa 2" } }
 ];
-const App = () => {
-  const width = Dimensions.get("screen").width;
-  return (
-    <FlatList style={styles.container}
-      data={photos}
-      keyExtractor={item => item.id}
-      renderItem={({ item }) =>
-        <View>
-          <View style={styles.photoHeader}>
-            <Image source={require("./resources/img/photo.jpeg")}
-              style={styles.photoProfile} />
-            <Text>{item.user.name}</Text>
-          </View>
-          <Image source={require("./resources/img/photo.jpeg")}
-            style={{ "width": width, "height": width }}
-          />
-        </View>
-      }
-    />
-  );
-};
+
+class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      photos: []
+    }
+  }
+
+  componentDidMount() {
+    fetch("http://192.168.1.104:8082/api/public/fotos/rafael")
+      .then(response => response.json())
+      .then(datas => this.setState({ photos: [...datas] }))
+      .catch(console.log);
+  }
+
+  render() {
+    return (
+      <FlatList style={styles.container}
+        data={this.state.photos}
+        keyExtractor={item => item.id.toString() }
+        renderItem={({ item }) =>
+          <Post item={item}/>
+        }
+      />
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
