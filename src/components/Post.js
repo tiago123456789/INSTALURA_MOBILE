@@ -12,6 +12,7 @@ import {
 import Comment from "./Comment";
 import InputComment from './InputComment';
 import Like from "./Like";
+import PostHeader from './PostHeader';
 
 const width = Dimensions.get("screen").width;
 
@@ -53,6 +54,7 @@ class Post extends Component {
     }
 
     addComment(newComment) {
+        const usernameFake = "usernameFake";
         const isNotEmpty = newComment.length > 0;
         if (isNotEmpty) {
             const photo = this.state.photo;
@@ -69,11 +71,10 @@ class Post extends Component {
     render() {
         return (
             <View>
-                <View style={styles.photoHeader}>
-                    <Image source={{ uri: this.state.photo.urlPerfil }}
-                        style={styles.photoProfile} />
-                    <Text>{this.state.photo.loginUsuario}</Text>
-                </View>
+                <PostHeader 
+                    urlPerfil={this.state.photo.urlPerfil}
+                    loginUsuario={this.state.photo.loginUsuario}
+                />
                 <Image source={{ uri: this.state.photo.urlFoto }}
                     style={{ "width": width, "height": width }} 
                 />

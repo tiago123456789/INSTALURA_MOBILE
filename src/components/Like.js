@@ -30,7 +30,7 @@ class Like extends Component {
 
     render() {
         return (
-            <View>
+            <View>  
                 <TouchableOpacity onPress={this.props.likeOrUnlike} >
                     <Image
                         source={this.loadingImageLikeOrUnlike()}
