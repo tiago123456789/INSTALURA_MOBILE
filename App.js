@@ -65,7 +65,7 @@ class App extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20
+    marginTop: 0
   },
   photoHeader: {
     margin: 10,
