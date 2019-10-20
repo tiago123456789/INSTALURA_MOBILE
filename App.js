@@ -27,57 +27,26 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import Post from './src/components/Post';
+import Feed from "./src/screen/Feed";
+import Login from "./src/screen/Login";
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
 
-const photos = [
-  { id: '1', user: { name: "Tiago Rosa da costa" } },
-  { id: '2', user: { name: "Tiago R. da costa 2" } }
-];
-
-class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      photos: []
+const Routes = createAppContainer(
+  createStackNavigator({
+    Login: {
+      screen: Login,
+      navigationOptions: {
+        title: "Login"
+      }
+    },
+    Feed: {
+      screen: Feed,
+      navigationOptions: {
+        title: "Feed"
+      }
     }
-  }
+  }));
 
-  componentDidMount() {
-    fetch("http://192.168.1.104:8082/api/public/fotos/rafael")
-      .then(response => response.json())
-      .then(datas => this.setState({ photos: [...datas] }))
-      .catch(console.log);
-  }
 
-  render() {
-    return (
-      <FlatList style={styles.container}
-        data={this.state.photos}
-        keyExtractor={item => item.id.toString() }
-        renderItem={({ item }) =>
-          <Post item={item}/>
-        }
-      />
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 0
-  },
-  photoHeader: {
-    margin: 10,
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  photoProfile: { 
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    marginRight: 10 
-  }
-});
-
-export default App;
+export default Routes;

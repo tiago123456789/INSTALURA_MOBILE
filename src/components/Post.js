@@ -6,13 +6,17 @@ import {
     Image,
     Dimensions,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    AsyncStorage
 } from 'react-native';
 
 import Comment from "./Comment";
 import InputComment from './InputComment';
 import Like from "./Like";
 import PostHeader from './PostHeader';
+import PostService from '../services/PostService';
+import Constants from '../config/App';
+import NotificationService from "../services/NotificationService";
 
 const width = Dimensions.get("screen").width;
 
@@ -24,25 +28,35 @@ class Post extends Component {
             photo: this.props.item,
             quantityLikes: this.props.item.likers.length,
         };
+        this._postService = new PostService();
         this.likeOrUnlike = this.likeOrUnlike.bind(this);
         this.addComment = this.addComment.bind(this);
     }
 
-    likeOrUnlike() {
-        const usernameFake = "usernameFake";
+    async likeOrUnlike() {
+        const username = await AsyncStorage.getItem(Constants.ASYNC_STORAGE.USERNAME);
         const photo = { ...this.state.photo, likeada: !this.state.photo.likeada };
         let quantityLikes = this.state.quantityLikes;
 
-        if (photo.likeada == false) {
-            photo.likers = photo.likers.filter(liker => liker != usernameFake);
-            quantityLikes -= 1;
-        } else {
-            photo.likers.push({
-                login: usernameFake
-            });
-            quantityLikes += 1;
+        try {
+            await this._postService.likeUnlike(photo.id);
+
+            if (photo.likeada == false) {
+                photo.likers = photo.likers.filter(liker => liker != username);
+                quantityLikes -= 1;
+            } else {
+                photo.likers.push({
+                    login: username
+                });
+                quantityLikes += 1;
+            }
+            this.setState({ photo: photo, quantityLikes: quantityLikes });
+        } catch (error) {
+            NotificationService.notify(
+                "Ops...", 
+                "Occour a problem! Operation can't complete.",
+            );
         }
-        this.setState({ photo: photo, quantityLikes: quantityLikes });
     }
 
     displayComments() {
@@ -53,33 +67,44 @@ class Post extends Component {
         ));
     }
 
-    addComment(newComment) {
-        const usernameFake = "usernameFake";
-        const isNotEmpty = newComment.length > 0;
-        if (isNotEmpty) {
-            const photo = this.state.photo;
-            photo.comentarios.push({
-                login: usernameFake,
-                texto: newComment,
-                id: Math.random()
-            });
+    async addComment(newComment) {
+        try {
+            const isNotEmpty = newComment.length > 0;
+            if (isNotEmpty) {
+                const username = await AsyncStorage.getItem(Constants.ASYNC_STORAGE.USERNAME);
+                const comment = {
+                    login: username,
+                    texto: newComment
+                };
 
-            this.setState({ photo });
+                await this._postService.addComment(this.state.photo.id, comment);
+
+                const photo = this.state.photo;
+                photo.comentarios.push(comment);
+    
+                this.setState({ photo });
+            }
+        } catch(error) {
+            NotificationService.notify(
+                "Ops...", 
+                "Occour a problem! Operation can't complete.",
+            );
         }
+       
     }
 
     render() {
         return (
             <View>
-                <PostHeader 
+                <PostHeader
                     urlPerfil={this.state.photo.urlPerfil}
                     loginUsuario={this.state.photo.loginUsuario}
                 />
                 <Image source={{ uri: this.state.photo.urlFoto }}
-                    style={{ "width": width, "height": width }} 
+                    style={{ "width": width, "height": width }}
                 />
                 <View style={styles.photoFooter} >
-                    <Like 
+                    <Like
                         likeOrUnlike={this.likeOrUnlike}
                         isLikeOrUnlike={this.state.photo.likeada}
                         quantityLikes={this.state.quantityLikes}
