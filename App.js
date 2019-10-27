@@ -29,6 +29,7 @@ import {
 
 import Feed from "./src/screen/Feed";
 import Login from "./src/screen/Login";
+import Profile from "./src/screen/Profile";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 
@@ -45,6 +46,9 @@ const Routes = createAppContainer(
       navigationOptions: {
         title: "Feed"
       }
+    },
+    Profile: {
+      screen: Profile,
     }
   }));
 

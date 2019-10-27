@@ -38,12 +38,23 @@ class Feed extends Component {
       photos: []
     };
     this.postService = new PostService();
+    this.loadFeed = this.loadFeed.bind(this);
   }
 
-  async componentDidMount() {
+  async loadFeed() {
     await this.postService.findFeed()
       .then(datas => this.setState({ photos: [...datas] }))
       .catch(console.log);
+  }
+
+  async componentDidMount() {
+    const { navigation } = this.props;
+    this.focusListener = navigation.addListener('willFocus', async () => {
+      await this.loadFeed();
+
+    });
+
+    await this.loadFeed();
   }
 
   render() {
@@ -52,7 +63,7 @@ class Feed extends Component {
         data={this.state.photos}
         keyExtractor={item => item.id.toString() }
         renderItem={({ item }) =>
-          <Post item={item}/>
+          <Post navigation={this.props.navigation} item={item}/>
         }
       />
     );

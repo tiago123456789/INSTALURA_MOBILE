@@ -96,7 +96,7 @@ class Post extends Component {
     render() {
         return (
             <View>
-                <PostHeader
+                <PostHeader navigation={this.props.navigation}
                     urlPerfil={this.state.photo.urlPerfil}
                     loginUsuario={this.state.photo.loginUsuario}
                 />

@@ -3,20 +3,33 @@ import {
     View,
     Text,
     StyleSheet,
-    Image
+    Image,
+    TouchableOpacity
 } from 'react-native';
 
 
 class PostHeader extends Component {
 
+    constructor(props) {
+        super(props);
+    }
+
+    goToProfile(username) {
+        this.props.navigation.navigate('Profile', {
+            username
+        });
+    }
+
     render() {
         const { urlPerfil, loginUsuario } = this.props;
         return (
-            <View style={styles.photoHeader}>
-                <Image source={{ uri: urlPerfil }}
-                    style={styles.photoProfile} />
-                <Text>{loginUsuario}</Text>
-            </View>
+            <TouchableOpacity onPress={() => this.goToProfile(loginUsuario)} >
+                <View style={styles.photoHeader}>
+                    <Image source={{ uri: urlPerfil }}
+                        style={styles.photoProfile} />
+                    <Text>{loginUsuario}</Text>
+                </View>
+            </TouchableOpacity>
         );
     }
 };
